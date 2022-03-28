@@ -27,84 +27,207 @@ const beyonceHash = {
 
 // 1. Print all the songs
 function printAllSongs() {
+  beyonceHash.hits.forEach((hit) => console.log(hit.title))
 }
 
 // 2. Print all the movies
 function printAllMovies() {
+  beyonceHash.hits.forEach(movie => console.log(movie.title))
 }
 
 // 3. Return an array of all Beyonce's hit song titles
 function hitSongTitles() {
+  return beyonceHash.hits.map(hit => hit.title)
 }
 
 // 4. Return an array of all Beyonce's fierceness ratings
 function allFiercenessRatings() {
+  return getKeyValuesByKey(beyonceHash.hits, "fierceness")
 }
 
 // 5. Return all the songs where Beyonce is wearing a bodysuit or a bodysuit is part of the video theme
-function songsWithBodySuits() {
+function songsWithBodySuits() { 
+  return getAllSongsByKeyValues(beyonceHash.hits, "bodysuit")
 }
 
 // 6. Return an array with all of the songs where Beyonce's fierceness is greater than or equal to a given number
-function getSongsByFiercenessGTE() {
+function getSongsByFiercenessGTE(fierceness) {
+return beyonceHash.hits.filter(hit => {
+  if(hit.fierceness >= fierceness){
+    return hit
+  }})
 }
 
 // 7. Return an array with all of the movies Beyonce made after or during a given year
-function getMoviesByDateGTE() {
+function getMoviesByDateGTE(year) {
+  return beyonceHash.movies.filter(movie => {
+    if(movie.year > year){
+      return movie
+    }
+  })
 }
 
 // 8. Return all hit songs where Beyonce was in a group
 function groupHits() {
+return beyonceHash.hits.filter(hit => {
+  if(hit.group === true){
+    return hit}
+  })
 }
 
 // 9. Return a hit song where Beyonce's hair is blonde
 function findBlondeHit() {
+  const blondeSongs = beyonceHash.hits.filter(song => {
+    return getSongByKeyValues(song, "blonde")
+  })
+  return blondeSongs[0]
 }
 
 // 10. Return the hit song "Sorry"
 function sorry() {
+  return getSongByTitle(beyonceHash.hits, "Sorry")
 }
 
 // 11. Return a given song
-function getSong() {
+function getSong(songTitle) {
+  return getSongByTitle(beyonceHash.hits, songTitle)
 }
 
 // 12. Return all hit songs where Beyonce's fierceness rating is 10
 function fiercestHits() {
+  return getSongsByFiercenessGTE(10)
 }
 
 // 13. Return the sum of Beyonce's fierceness value for all of her hit songs
 function hitFiercenessSum() {
+  let songs = beyonceHash.hits
+  return getKeyValuesByKey(songs, "fierceness").reduce((songs, number) => {
+    return songs + number},0 )
 }
 
 // 14. Return the average fierceness value for all Beyonce's hit songs
 function hitFiercenessAverage() {
+    return (Math.round((hitFiercenessSum() / beyonceHash.hits.length)))
 }
 
 // 15. Return the sum of Beyonce's rating value for all of her movies
 function ratingSum() {
+  const movies = beyonceHash.movies
+  return getKeyValuesByKey(movies, "rating").reduce((movies, number) => {
+    return movies + number}, 0)
 }
 
 // 16. Return the average rating value for all of her movies
 function ratingAverage() {
+  return ((ratingSum() / beyonceHash.movies.length))
 }
 
 // 17. Return the sum of the total number of dancers in all of the hit song videos
 function hitDancerSum() {
+  const songs = hitSongTitles()
+  return getKeyValuesByKey(songs, "dancers").reduce((songs, number) => {
+    return songs + number}, 0)
 }
 
 // 18. Return an array of Beyonce's hairstyles without repeats
 function uniqueHairstyles() {
+  const styles = []
+  const allStyles = getKeyValuesByKey(beyonceHash.hits, "hair")
+  for(const array of allStyles){
+    for(const item of array){
+      if(!styles.includes(item)){
+      styles.push(item)}
+    }
+  }
+  return styles
 }
 
 // 19. Return an object where the properties are song names and the value is an object which contains that song's fierceness and the average fierceness for all songs
 function songFiercenessByName() {
+  let obj = {}
+  const allSongs = beyonceHash.hits.map(hit => hit)
+  for(const song of allSongs){
+     obj = {
+      ...obj,
+      [song.title]: {
+        fierceness: song.fierceness,
+        avgTotalFierceness: Math.round((hitFiercenessSum() / beyonceHash.hits.length))
+      }
+    }
+  }
+  return obj
 }
 
 // 20. Return an object where the properties are movie names and the value is an object which contains that movie's rating and the average rating for all movies
 function movieRatingsByName() {
+  let obj = {}
+  const allMovies = beyonceHash.movies.map(element => element)
+  for(const movie of allMovies){
+     obj = {
+      ...obj,
+      [movie.title]: {
+        rating: movie.rating,
+        avgTotalFierceness: 3
+      }
+    }
+  }
+  return obj
 }
 
 // 21. Return an object with Beyonce's hairstyles as the keys and a tally of each hairstyle, eg. `{ "blonde": 3, ... }`
 function hairStyleFrequency() {
+  let obj = {}
+  let count = 0;
+  const uniqueStyles = uniqueHairstyles()
+  const allStyles = getKeyValuesByKey(beyonceHash.hits, "hair")
+  for(const style of uniqueStyles){
+    count = 0;
+    for(const styleArray of allStyles){ 
+      for(const element of styleArray){
+        if(style === element){
+            count++;
+        }
+      }
+    }
+    obj = {
+      ...obj,
+      [style]: {
+      tally: count
+      }
+    }
+  }
+  return obj
+}
+
+// My functions
+function getKeyValuesByKey(list, keyStringToSearch) {
+  return list.map(hit => hit[keyStringToSearch])
+  }
+
+function AddKeyValuesByKey(list, keyStringToSearch) {
+  return list.find(hit => hit[keyStringToSearch])
+  }
+
+function getAllSongsByKeyValues(songList, keyValueStringToSearch)
+{
+  return songList.filter(hit => { 
+    for(const key in hit){
+      if(hit[key].toString().includes(keyValueStringToSearch)){
+      return hit
+      }
+    }
+  })
+}
+
+function getSongByKeyValues(song, keyValueStringToSearch)
+{
+  for(const key in song){
+    if(song[key].toString().includes(keyValueStringToSearch)){
+      return song
+    }
+  }
+}
+
+function getSongByTitle(songList, songName){
+  return songList.find(hit => hit.title.toString() === songName)
 }
